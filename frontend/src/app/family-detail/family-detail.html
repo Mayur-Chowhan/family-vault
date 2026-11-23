@@ -1,0 +1,31 @@
+<main>
+  <p><a routerLink="/">&larr; All families</a></p>
+
+  @if (family(); as f) {
+    <h1>{{ f.name }}</h1>
+  }
+
+  <h2>Albums</h2>
+
+  <form class="create" (ngSubmit)="createAlbum()">
+    <input [(ngModel)]="newAlbumName" name="albumName" placeholder="New album name" required />
+    <button type="submit">Create album</button>
+  </form>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (albums().length === 0) {
+    <p class="empty">No albums yet.</p>
+  } @else {
+    <ul>
+      @for (album of albums(); track album.id) {
+        <li>
+          <a [routerLink]="['/families', familyId, 'albums', album.id]">{{ album.name }}</a>
+          <span class="badge">{{ album.visibility }}</span>
+        </li>
+      }
+    </ul>
+  }
+</main>

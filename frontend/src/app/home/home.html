@@ -1,0 +1,39 @@
+<header>
+  <h1>Family Vault</h1>
+  <div class="user">
+    <span>{{ auth.user()?.display_name }} ({{ auth.user()?.email }})</span>
+    <button (click)="auth.logout()">Log out</button>
+  </div>
+</header>
+
+<main>
+  <h2>Your families</h2>
+
+  <p class="hint">Click a family to manage its albums and media.</p>
+
+  <form class="create" (ngSubmit)="createFamily()">
+    <input
+      [(ngModel)]="newFamilyName"
+      name="familyName"
+      placeholder="New family name"
+      required
+    />
+    <button type="submit">Create</button>
+  </form>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (families().length === 0) {
+    <p class="empty">No families yet — create one above.</p>
+  } @else {
+    <ul>
+      @for (family of families(); track family.id) {
+        <li>
+          <a [routerLink]="['/families', family.id]">{{ family.name }}</a>
+        </li>
+      }
+    </ul>
+  }
+</main>

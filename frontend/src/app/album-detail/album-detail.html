@@ -1,0 +1,74 @@
+<main>
+  <p>
+    <a [routerLink]="['/families', familyId]">&larr; Albums</a>
+  </p>
+
+  @if (album(); as a) {
+    <h1>{{ a.name }}</h1>
+    <p class="muted">{{ a.visibility }} album</p>
+  }
+
+  <label class="upload-btn">
+    {{ uploading() ? 'Uploading… ' + uploadProgress() + '%' : 'Upload photos/videos' }}
+    <input type="file" multiple hidden (change)="onFilesSelected($event)" />
+  </label>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (media().length === 0) {
+    <p class="empty">No media yet — upload something above.</p>
+  } @else {
+    <div class="grid">
+      @for (item of media(); track item.id) {
+        <figure>
+          @if (item.resource_type === 'image') {
+            <img
+              [src]="item.thumbnail_url"
+              [alt]="item.original_filename"
+              loading="lazy"
+              (click)="open(item)"
+            />
+          } @else {
+            <div class="video-thumb" (click)="open(item)">
+              {{ item.format.toUpperCase() }}
+            </div>
+          }
+          <figcaption>
+            <span class="name">{{ item.original_filename }}</span>
+            <span class="actions">
+              <a [href]="item.download_url" download>Download</a>
+              <button class="delete" (click)="deleteMedia(item)">Delete</button>
+            </span>
+          </figcaption>
+        </figure>
+      }
+    </div>
+
+    @if (hasMore()) {
+      <button class="load-more" (click)="loadMore()">
+        Load more ({{ media().length }} of {{ total() }})
+      </button>
+    }
+  }
+</main>
+
+@if (selected(); as item) {
+  <div class="lightbox" (click)="close()">
+    <button class="lightbox-close" (click)="close()">&times;</button>
+    <button class="lightbox-nav prev" (click)="step(-1); $event.stopPropagation()">&#8249;</button>
+    <figure (click)="$event.stopPropagation()">
+      @if (item.resource_type === 'image') {
+        <img [src]="item.url" [alt]="item.original_filename" />
+      } @else {
+        <video [src]="item.url" controls autoplay></video>
+      }
+      <figcaption>
+        <span>{{ item.original_filename }}</span>
+        <a class="download" [href]="item.download_url" download>Download original</a>
+      </figcaption>
+    </figure>
+    <button class="lightbox-nav next" (click)="step(1); $event.stopPropagation()">&#8250;</button>
+  </div>
+}
